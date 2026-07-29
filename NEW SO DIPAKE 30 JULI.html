@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SO Pallet Inventaris Logistik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --surface:#FFFFFF;
+    --surface-2:#F7FAFC;
+    --border:#E2E8F0;
+    --text:#173049;
+    --muted:#5E85A3;
+    --amber:#4FA8E8;
+    --amber-dim:#3A8FD1;
+    --yolk:#6FBBF0;
+    --yolk-deep:#2E86D6;
+    --teal:#1D6FB8;
+    --red:#D25353;
+    --green:#1F9254;
+    --green-bg:rgba(31,146,84,0.10);
+    --green-border:rgba(31,146,84,0.28);
+    --mono: 'SF Mono', 'Consolas', 'Menlo', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 18px 60px;}
+
+  header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 0 20px;border-bottom:1px solid var(--border);margin-bottom:22px;
+    flex-wrap:wrap;gap:12px;
+    position:sticky;top:0;z-index:50;
+    background:var(--bg);
+  }
+  .brand{display:flex;align-items:center;gap:16px;}
+  .brand-mark{
+    width:170px;height:170px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark img{
+    width:100%;height:100%;
+    object-fit:contain;
+    display:block;
+  }
+  h1{font-size:26px;letter-spacing:0.02em;margin:0;font-weight:700;}
+  .subtitle{color:var(--muted);font-size:14px;margin-top:5px;font-family:var(--mono);letter-spacing:0.02em;}
+  
+  .header-right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:6px;
+  }
+  .clock{
+    font-family:var(--mono);color:var(--muted);font-size:12px;text-align:right;
+  }
+  .clock strong{color:var(--teal);display:block;font-size:14px;}
+
+  .session-pill-header{
+    display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);
+    border:1px solid var(--green-border);color:var(--green);padding:4px 10px;
+    border-radius:20px;font-size:11px;font-family:var(--mono);
+  }
+  .session-pill-header button{
+    background:none;border:none;color:var(--red);cursor:pointer;font-family:var(--sans);
+    font-size:10.5px;font-weight:700;margin-left:4px;padding:0;
+  }
+
+  .main-tabs{
+    display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;
+  }
+  .tab-btn{
+    font-family:var(--sans);font-size:14px;font-weight:700;
+    padding:10px 18px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface);color:var(--muted);cursor:pointer;
+    transition:all .15s;display:flex;align-items:center;gap:6px;
+    box-shadow:0 1px 3px rgba(23,48,73,0.06);
+  }
+  .tab-btn:hover{border-color:var(--yolk-deep);color:var(--teal);}
+  .tab-btn.active{
+    background:linear-gradient(145deg, #CDEBFB, var(--yolk-deep));
+    color:#0E3A5C;border-color:var(--yolk-deep);
+    box-shadow:0 2px 8px rgba(46,134,214,0.3);
+  }
+
+  .crumbs{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    font-size:13px;margin-bottom:20px;color:var(--muted);font-family:var(--mono);
+  }
+  .crumbs .seg{cursor:pointer;padding:4px 2px;transition:color .15s;}
+  .crumbs .seg:hover{color:var(--teal);}
+  .back-btn{
+    display:inline-flex;align-items:center;gap:6px;background:var(--surface);
+    border:1px solid var(--border);color:var(--teal);border-radius:99px;
+    padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;
+    font-family:var(--sans);margin-bottom:16px;transition:all .12s;
+  }
+  .back-btn:hover{background:var(--surface-2);border-color:var(--yolk-deep);transform:translateX(-2px);}
+  .crumbs .seg.active{color:var(--text);font-weight:600;cursor:default;}
+  .crumbs .sep{color:#3a4356;}
+
+  .search-box{
+    margin-bottom:18px;position:relative;
+  }
+  .search-box input{
+    width:100%;padding:12px 14px 12px 40px;border-radius:10px;
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+    font-size:14px;font-family:var(--sans);outline:none;transition:border-color .15s;
+  }
+  .search-box input:focus{border-color:var(--amber);}
+  .search-box::before{
+    content:"⌕";position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    color:var(--muted);font-size:17px;
+  }
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(190px,1fr));gap:12px;
+  }
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px 14px;cursor:pointer;transition:transform .12s, border-color .12s, background .12s, box-shadow .12s;
+    position:relative;overflow:hidden;
+    box-shadow:0 1px 3px rgba(23,48,73,0.06);
+  }
+  .card:hover{border-color:var(--amber-dim);background:var(--surface-2);transform:translateY(-2px);box-shadow:0 6px 16px rgba(23,48,73,0.10);}
+  .card:active{transform:translateY(0);}
+  .card .idx{
+    font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.05em;
+  }
+  .card .name{
+    font-size:14.5px;font-weight:600;margin-top:6px;line-height:1.3;
+  }
+  .card .badge{
+    font-family:var(--mono);font-size:10px;
+    background:var(--green-bg);color:var(--green);padding:2px 7px;border-radius:20px;
+    border:1px solid var(--green-border);font-weight:700;
+  }
+  .card .badge.empty{
+    background:rgba(210,83,83,0.10);color:var(--red);border:1px solid rgba(210,83,83,0.28);
+  }
+
+  #dcGrid .card .badge {
+    position:absolute;top:12px;right:12px;
+  }
+
+  #dcGrid .card{background:#EAF4FD;}
+  #dcGrid .card:hover{background:#DCEBFA;}
+
+  .card.custom-dc{
+    background:#FFF9E6 !important;
+    border:1px dashed #F5A623 !important;
+  }
+  
+  .card.custom-card-add{
+    border:2px dashed var(--teal);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;color:var(--teal);font-weight:600;font-size:12px;
+    background:var(--surface-2);min-height:85px;padding:10px;gap:2px;
+  }
+  .card.custom-card-add:hover{background:#EAF4FD;}
+  .card.custom-card-add .add-icon{font-size:16px;font-weight:800;}
+
+  .custom-del-btn{
+    position:absolute;top:38px;right:12px;background:rgba(210,83,83,0.1);
+    border:1px solid rgba(210,83,83,0.3);color:var(--red);
+    font-size:11px;font-family:var(--mono);font-weight:bold;
+    cursor:pointer;padding:2px 6px;border-radius:6px;transition:all .12s;
+  }
+  .custom-del-btn:hover{
+    background:var(--red);color:#fff;
+  }
+
+  /* Quick Input Banner Button */
+  .quick-menu-banner {
+    background: linear-gradient(135deg, #1D6FB8, #2E86D6);
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(46,134,214,0.3);
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .quick-menu-banner:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+  .quick-menu-title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .quick-menu-sub {
+    font-size: 12px;
+    opacity: 0.9;
+    font-family: var(--mono);
+    margin-top: 2px;
+  }
+  .quick-menu-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  /* Fullscreen Modal Quick Table */
+  .fullscreen-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 25, 40, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  .fullscreen-modal-container {
+    background: var(--surface);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 650px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+  .fullscreen-modal-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface-2);
+  }
+  .fullscreen-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .fullscreen-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  .fullscreen-modal-footer {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .quick-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    height: 100%;
+  }
+  .quick-table th {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    padding: 10px 6px;
+    border-bottom: 2px solid var(--border);
+    background: var(--surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .quick-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    line-height: 1.3;
+  }
+  .quick-counter-btn-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .quick-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--teal);
+    font-weight: 800;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .quick-btn:hover { background: var(--yolk-deep); color:#fff; border-color:var(--yolk-deep); }
+  .quick-btn:active { transform: scale(0.92); }
+
+  .card.pallet{padding:14px;display:flex;flex-direction:column;}
+  .card-top-bar{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+  }
+  .card.pallet .name{font-size:14px;line-height:1.2;height:2.4em;overflow:hidden;}
+  .card.pallet .dim{color:var(--muted);font-size:11px;margin-top:2px;font-family:var(--mono);}
+  .card.pallet .thumb{
+    width:100%;height:110px;border-radius:10px;overflow:hidden;margin-bottom:8px;
+    background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .card.pallet .thumb img{width:100%;height:100%;object-fit:contain;display:block;}
+
+  .card-counter{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);
+  }
+  .counter-btn{
+    width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--teal);font-size:20px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:all .12s;user-select:none;
+  }
+  .counter-btn:hover{background:var(--yolk-deep);color:#fff;border-color:var(--yolk-deep);}
+  .counter-btn:active{transform:scale(0.92);}
+  .counter-val{
+    font-family:var(--mono);font-weight:800;font-size:16px;color:var(--teal);
+  }
+
+  .pallet-photo{
+    border:1px solid var(--border);border-radius:14px;overflow:hidden;
+    background:var(--surface);margin-bottom:20px;
+    box-shadow:0 1px 4px rgba(23,48,73,0.06);
+  }
+  .pallet-photo .frame{
+    width:100%;height:320px;display:flex;align-items:center;justify-content:center;
+    background:var(--surface-2);
+  }
+  .pallet-photo .frame img{
+    max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;
+  }
+  .pallet-photo .cap{
+    display:flex;align-items:center;gap:8px;padding:12px 16px;
+    border-top:1px solid var(--border);font-size:13px;color:var(--muted);font-family:var(--mono);
+  }
+  .pallet-photo .cap strong{color:var(--text);font-family:var(--sans);}
+
+  .section-title{
+    font-size:13px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);
+    margin:0 0 12px 2px;font-family:var(--mono);
+  }
+
+  .panel{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:22px;margin-bottom:20px;
+    box-shadow:0 1px 4px rgba(23,48,73,0.06);
+  }
+  .panel-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .panel-head .icon{
+    width:38px;height:38px;border-radius:99px;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;
+    border:1px solid var(--border);overflow:hidden;
+  }
+  .panel-head .icon img{width:100%;height:100%;object-fit:contain;display:block;}
+  .panel-head .t1{font-size:11px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.06em;}
+  .panel-head .t2{font-size:16px;font-weight:700;margin-top:2px;}
+
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media (max-width:560px){.form-row{grid-template-columns:1fr;}}
+  .field label{
+    display:block;font-size:11.5px;color:var(--muted);margin-bottom:6px;
+    font-family:var(--mono);letter-spacing:0.03em;text-transform:uppercase;
+  }
+  .field input, .field textarea{
+    width:100%;padding:11px 13px;border-radius:99px;background:var(--surface-2);
+    border:1px solid var(--border);color:var(--text);font-size:14.5px;font-family:var(--sans);
+    outline:none;transition:border-color .15s;
+  }
+  .field input:focus, .field textarea:focus{border-color:var(--amber);}
+
+  .btn{
+    border:none;border-radius:99px;padding:10px 20px;font-size:14px;font-weight:700;
+    cursor:pointer;transition:filter .12s, transform .12s;font-family:var(--sans);
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn:disabled{opacity:0.6;cursor:not-allowed;}
+  .btn-primary{background:linear-gradient(145deg, #CDEBFB, var(--yolk-deep));color:#0E3A5C;box-shadow:0 2px 8px rgba(46,134,214,0.35);}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-danger{background:linear-gradient(145deg, #FADBD8, var(--red));color:#FFFFFF;box-shadow:0 2px 8px rgba(210,83,83,0.35);}
+  .btn-danger:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+  .btn-ghost:hover{color:var(--text);border-color:var(--text);}
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(14, 58, 92, 0.2);
+    border-radius: 50%;
+    border-top-color: #0E3A5C;
+    animation: spin 0.8s linear infinite;
+  }
+  .spinner-light {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast-success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 25, 40, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .toast-success-box {
+    background: #ffffff;
+    border: 1px solid var(--green-border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(10, 25, 40, 0.2);
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .toast-icon-wrap {
+    width: 60px;
+    height: 60px;
+    background: var(--green-bg);
+    color: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 14px;
+    border: 2px solid var(--green-border);
+  }
+
+  .toast-success-box h3 {
+    margin: 0 0 6px;
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .toast-success-box p {
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(20px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+  .stats{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .stat{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:12px 16px;flex:1;min-width:130px;
+    box-shadow:0 1px 3px rgba(23,48,73,0.06);
+  }
+  .stat .v{font-size:22px;font-weight:800;font-family:var(--mono);color:var(--teal);}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.04em;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
+    color:var(--muted);letter-spacing:0.05em;padding:12px 10px;border-bottom:1px solid var(--border);
+    font-weight:600;
+  }
+  tbody td{padding:12px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  .qty-cell{font-family:var(--mono);font-weight:700;}
+  .time-cell{color:var(--muted);font-size:12px;font-family:var(--mono);}
+  
+  .del-btn{
+    background:rgba(210,83,83,0.08);border:1px solid rgba(210,83,83,0.25);color:var(--red);border-radius:8px;
+    padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+  .del-btn:hover{background:var(--red);color:#ffffff;border-color:var(--red);box-shadow:0 2px 6px rgba(210,83,83,0.3);}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(10,25,40,0.55);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;
+  }
+  .modal-box{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:26px 24px;max-width:380px;width:100%;box-shadow:0 12px 40px rgba(10,25,40,0.25);
+    position:relative;
+  }
+  .modal-box h3{margin:0 0 4px;font-size:18px;}
+  .modal-box .sub{color:var(--muted);font-size:13px;margin-bottom:18px;font-family:var(--mono);}
+  .modal-box .field{margin-bottom:12px;}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;}
+  .modal-actions .btn{flex:1;}
+  .modal-error{
+    background:rgba(210,83,83,0.10);border:1px solid rgba(210,83,83,0.28);color:var(--red);
+    font-size:12.5px;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none;
+  }
+  .modal-close{
+    position:absolute;top:10px;right:12px;background:none;border:none;color:var(--muted);
+    font-size:18px;cursor:pointer;
+  }
+
+  .summary-box{
+    margin-top:20px;padding:16px;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:12px;
+  }
+  .summary-list{
+    margin:10px 0;padding:0;list-style:none;font-size:13px;font-family:var(--mono);
+  }
+  .summary-list li{
+    display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);
+  }
+  .summary-total{
+    display:flex;justify-content:space-between;font-weight:800;font-size:16px;
+    color:var(--teal);margin-top:10px;padding-top:8px;border-top:2px solid var(--border);
+  }
+
+  /* Garis Tabel Rekapan SO Hitam Pekat & Jelas */
+  .rekap-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .rekap-table-wrapper {
+    overflow-x: auto;
+    border: 2px solid #000000;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 1px 4px rgba(23,48,73,0.06);
+    margin-top: 14px;
+  }
+  .rekap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    white-space: nowrap;
+    table-layout: auto;
+  }
+  .rekap-table th {
+    background: var(--surface-2);
+    color: #000000;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 12px 10px;
+    border-bottom: 2px solid #000000;
+    border-right: 1px solid #000000;
+    text-align: center;
+  }
+  .rekap-table th:first-child, .rekap-table th:nth-child(2) {
+    text-align: left;
+  }
+  .rekap-table td {
+    padding: 10px;
+    border-bottom: 1px solid #000000;
+    border-right: 1px solid #000000;
+    text-align: center;
+    font-family: var(--mono);
+    color: #000000;
+  }
+  .rekap-table th:last-child, .rekap-table td:last-child {
+    border-right: none;
+  }
+  
+  .rekap-table td.qty-has {
+    font-weight: 800;
+    color: #000000 !important;
+    background-color: #D4EDDA !important;
+  }
+  .rekap-table td.qty-zero {
+    font-weight: 600;
+    color: #444444 !important;
+    background-color: #F8D7DA !important;
+  }
+  .rekap-table tr.highlight-user-dc td.dc-cell {
+    background: rgba(46, 134, 214, 0.2) !important;
+  }
+  .rekap-table td.dc-cell {
+    font-family: var(--sans);
+    font-weight: 700;
+    text-align: left;
+    color: #000000;
+  }
+  .rekap-table td.total-cell {
+    font-weight: 800;
+    color: #000000;
+    background: #CDEBFB;
+  }
+  .rekap-table tfoot td {
+    font-weight: 800;
+    background: var(--surface-2);
+    border-top: 2px solid #000000;
+    color: #000000;
+  }
+
+  /* Style Khusus Live TV / Layar Penuh Tabel Rekapan tanpa Scroll Horizontal */
+  .rekap-table-wrapper.tv-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    background: #ffffff;
+    border-radius: 0;
+    border: none;
+    padding: 10px;
+    margin: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .rekap-table-wrapper.tv-fullscreen .rekap-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    white-space: normal !important;
+  }
+  .rekap-table-wrapper.tv-fullscreen .rekap-table th {
+    font-size: 9.5px !important;
+    padding: 6px 2px !important;
+    word-wrap: break-word;
+    line-height: 1.15;
+    border-bottom: 2px solid #000000;
+    border-right: 1px solid #000000;
+  }
+  .rekap-table-wrapper.tv-fullscreen .rekap-table td {
+    font-size: 10.5px !important;
+    padding: 4px 2px !important;
+    word-wrap: break-word;
+    border-bottom: 1px solid #000000;
+    border-right: 1px solid #000000;
+  }
+  .rekap-table-wrapper.tv-fullscreen .rekap-table th:first-child { width: 25px; }
+  .rekap-table-wrapper.tv-fullscreen .rekap-table th:nth-child(2) { width: 130px; }
+
+  #monitorApp{
+    --bg-0:#f4f7fa;
+    --bg-1:#ffffff;
+    --bg-2:#eef2f7;
+    --line:#dbe4ec;
+    --text-hi:#101820;
+    --text-lo:#5c6b78;
+    --mon-amber:#e8790a;
+    --cyan:#0090a8;
+    --mon-green:#0e9f5f;
+    --mon-red:#e0273f;
+    --font-display:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    background-color:var(--bg-0);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(0,144,168,0.07), transparent 45%),
+      radial-gradient(circle at 90% 100%, rgba(232,121,10,0.07), transparent 45%);
+    color:var(--text-hi);
+    font-family:var(--font-display);
+    border-radius:16px;
+    padding:clamp(14px,2vw,24px);
+  }
+  #monitorApp .mon-wrap{max-width:1900px;margin:0 auto;}
+  #monitorApp .mon-header{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;
+    padding-bottom:clamp(12px,1.6vw,20px);border-bottom:1px solid var(--line);
+    margin-bottom:clamp(14px,2vw,26px);
+  }
+  #monitorApp .mon-brand{display:flex;align-items:center;gap:14px;}
+  #monitorApp .mon-brand .mark{
+    width:clamp(38px,3.2vw,50px);height:clamp(38px,3.2vw,50px);border-radius:10px;
+    background:linear-gradient(135deg,var(--cyan),var(--mon-amber));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-weight:700;color:#04070a;
+    font-size:clamp(14px,1.2vw,18px);flex-shrink:0;
+  }
+  #monitorApp .mon-brand h2{font-size:clamp(15px,1.5vw,22px);font-weight:700;letter-spacing:.02em;}
+  #monitorApp .mon-brand p{
+    font-family:var(--font-mono);font-size:clamp(10px,.85vw,12px);color:var(--text-lo);
+    letter-spacing:.04em;text-transform:uppercase;margin-top:2px;
+  }
+  #monitorApp .status-block{display:flex;align-items:center;gap:clamp(10px,1.4vw,22px);flex-wrap:wrap;}
+  #monitorApp .status-pill{
+    display:flex;align-items:center;gap:8px;background:var(--bg-2);
+    border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 10px;
+    font-family:var(--font-mono);font-size:clamp(10px,.85vw,12px);color:var(--text-lo);
+  }
+  #monitorApp .dot{width:8px;height:8px;border-radius:50%;background:var(--mon-green);box-shadow:0 0 8px var(--mon-green);}
+  #monitorApp .dot.err{background:var(--mon-red);box-shadow:0 0 8px var(--mon-red);}
+  #monitorApp .dot.loading{background:var(--mon-amber);box-shadow:0 0 8px var(--mon-amber);animation:mon-pulse 1s infinite;}
+  @keyframes mon-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  #monitorApp .mon-btn{
+    font-family:var(--font-mono);font-size:clamp(10px,.85vw,12px);background:var(--bg-2);
+    border:1px solid var(--line);color:var(--text-hi);padding:8px 14px;border-radius:8px;
+    cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .15s, color .15s;
+  }
+  #monitorApp .mon-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+  #monitorApp .refresh-track{width:64px;height:3px;background:var(--line);border-radius:3px;overflow:hidden;}
+  #monitorApp .refresh-fill{height:100%;width:0%;background:var(--cyan);transition:width 1s linear;}
+
+  #monitorApp .highlight-strip{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:clamp(10px,1.2vw,16px);margin-bottom:clamp(16px,2vw,28px);
+  }
+  #monitorApp .hl-card{
+    background:linear-gradient(160deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);
+    border-left:3px solid var(--mon-amber);border-radius:12px;padding:clamp(12px,1.4vw,18px);
+  }
+  #monitorApp .hl-card .lbl{
+    font-family:var(--font-mono);font-size:clamp(9px,.75vw,11px);letter-spacing:.08em;
+    color:var(--text-lo);text-transform:uppercase;display:flex;justify-content:space-between;
+  }
+  #monitorApp .hl-card .num{
+    font-family:var(--font-mono);font-weight:700;font-size:clamp(24px,2.6vw,38px);
+    color:var(--mon-amber);margin-top:6px;
+  }
+  #monitorApp .hl-card .sub{font-size:clamp(11px,.9vw,13px);color:var(--text-hi);margin-top:2px;font-weight:600;}
+
+  #monitorApp .mon-toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    margin-bottom:clamp(14px,1.6vw,20px);
+  }
+  #monitorApp .result-count{font-family:var(--font-mono);font-size:clamp(11px,.9vw,13px);color:var(--text-lo);letter-spacing:.02em;}
+  #monitorApp .result-count strong{color:var(--text-hi);}
+  #monitorApp .search-sort{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+  #monitorApp input#monSearch{
+    background:var(--bg-1);border:1px solid var(--line);color:var(--text-hi);padding:8px 12px;
+    border-radius:8px;font-family:var(--font-mono);font-size:clamp(11px,.9vw,13px);width:clamp(160px,16vw,240px);
+  }
+  #monitorApp input#monSearch::placeholder{color:var(--text-lo);}
+  #monitorApp select#monSortMode{
+    background:var(--bg-1);border:1px solid var(--line);color:var(--text-hi);padding:8px 10px;
+    border-radius:8px;font-family:var(--font-mono);font-size:clamp(11px,.9vw,13px);
+  }
+
+  #monitorApp .mon-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(160px,14vw,220px),1fr));
+    gap:clamp(10px,1.1vw,16px);
+  }
+  #monitorApp .mon-card{
+    background:var(--bg-1);border:1px solid var(--line);border-radius:12px;
+    padding:clamp(12px,1.2vw,18px);position:relative;overflow:hidden;
+    transition:transform .15s, border-color .15s;
+  }
+  #monitorApp .mon-card:hover{transform:translateY(-2px);border-color:var(--cyan);}
+  #monitorApp .mon-card .grp-tag{position:absolute;top:0;left:0;height:100%;width:3px;}
+  #monitorApp .mon-card .name{
+    font-size:clamp(11.5px,1vw,14px);font-weight:700;color:var(--text-hi);
+    line-height:1.25;min-height:2.4em;margin-bottom:10px;
+  }
+  #monitorApp .mon-card .val{
+    font-family:var(--font-mono);font-weight:700;font-size:clamp(22px,2.2vw,32px);
+    color:var(--cyan);display:flex;align-items:baseline;gap:6px;
+  }
+  #monitorApp .mon-card .val span{font-size:clamp(9px,.7vw,11px);color:var(--text-lo);font-weight:500;font-family:var(--font-display);}
+  #monitorApp .mon-card .bar-track{margin-top:10px;height:5px;background:var(--bg-2);border-radius:3px;overflow:hidden;}
+  #monitorApp .mon-card .bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--mon-amber));width:0%;transition:width .8s ease;}
+  #monitorApp .mon-card.zero .val{color:var(--text-lo);}
+  #monitorApp .mon-card.zero .bar-fill{background:var(--line);}
+
+  #monitorApp.tv-mode .mon-btn span.label,
+  #monitorApp.tv-mode .mon-toolbar{display:none;}
+  #monitorApp.tv-mode .mon-wrap{max-width:100%;}
+  #monitorApp.tv-mode .mon-grid{grid-template-columns:repeat(auto-fill,minmax(clamp(180px,15vw,240px),1fr));}
+  #monitorApp.tv-mode{border-radius:0;height:100vh;overflow-y:auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark"><img src="https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/bd41eff4-cff2-45b9-9689-472f68479192.png" alt="Logo"></div>
+      <div>
+        <h1>SO PALLET INVENTARIS LOGISTIK</h1>
+        <div class="subtitle">Pencatatan &amp; Monitoring Serah Terima Pallet Antar DC</div>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <div id="sessionHeaderContainer"></div>
+      <div class="clock">
+        <div id="syncBadge" style="font-family:var(--mono);font-size:10.5px;margin-bottom:2px;padding:2px 8px;border-radius:20px;display:inline-block;"></div>
+        <strong id="clockTime">--:--:--</strong>
+        <span id="clockDate">-</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-tabs" id="mainTabs">
+    <button class="tab-btn active" data-page="home" onclick="goPage('home')">🏠 Beranda</button>
+    <button class="tab-btn" data-page="monitor" onclick="goPage('monitor')">📊 Monitor DC</button>
+    <button class="tab-btn" data-page="rekap" onclick="goPage('rekap')">📋 Rekapan SO</button>
+  </div>
+
+  <div class="crumbs" id="crumbs"></div>
+
+  <div id="app"></div>
+
+  <div id="monitorApp" style="display:none;">
+    <div class="mon-wrap">
+      <div class="mon-header">
+        <div class="mon-brand">
+          <div class="mark">SO</div>
+          <div>
+            <h2>Monitor Total Pallet per DC</h2>
+            <p>NDC Jatake · Live dari Google Sheets</p>
+          </div>
+        </div>
+        <div class="status-block">
+          <div class="status-pill"><span class="dot loading" id="monStatusDot"></span><span id="monStatusText">Menghubungkan…</span></div>
+          <div class="status-pill">
+            <span class="refresh-track"><span class="refresh-fill" id="monRefreshFill"></span></span>
+            <span id="monRefreshLabel">30s</span>
+          </div>
+          <button class="mon-btn" id="monRefreshBtn">⟳ <span class="label">Refresh</span></button>
+          <button class="mon-btn" id="monFsBtn">⛶ <span class="label">TV Mode</span></button>
+        </div>
+      </div>
+
+      <div class="highlight-strip" id="monHighlightStrip"></div>
+
+      <div class="mon-toolbar">
+        <div class="result-count" id="monResultCount"></div>
+        <div class="search-sort">
+          <input type="text" id="monSearch" placeholder="Cari nama DC…">
+          <select id="monSortMode">
+            <option value="desc">Total: Tinggi → Rendah</option>
+            <option value="asc">Total: Rendah → Tinggi</option>
+            <option value="az">Nama: A → Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mon-grid" id="monGrid"></div>
+
+      <div class="mon-footer">
+        <span>Sumber: Google Sheets — SO PALLET INVENTARIS LOGISTIK (Data Dashboard SO)</span>
+        <span id="monLastUpdate">Terakhir sinkron: —</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="rekapApp" style="display:none;">
+    <div class="search-box">
+      <input type="text" id="rekapSearch" placeholder="Cari DC / Gudang di rekapan..." oninput="renderRekapTable()">
+    </div>
+    <div class="rekap-header-bar">
+      <div class="section-title" style="margin:0;">📊 Rekapan SO Pallet per DC &amp; per Kategori</div>
+      <button class="btn btn-primary" id="btnRekapTV" onclick="toggleRekapTVMode()" style="font-size:12px; padding:6px 14px;">
+        ⛶ Perbesar Layar Penuh
+      </button>
+    </div>
+    <div id="rekapStatsContainer"></div>
+    <div id="rekapTableContainer" class="rekap-table-wrapper"></div>
+  </div>
+
+</div>
+
+<script>
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzcSrkc5aDR56V75PSg2OzNqlgO0dbNb31fbpdakQSX9HlxQjbQ7pCIZGwS_v8wgzVo/exec",
+  AUTO_REFRESH_MS: 4000
+};
+
+const MONITOR_CONFIG = {
+  SHEET_ID: '1ZflMoKtX4QK0lJYu748aN763DfOLzWS3OneZ3o-okGE',
+  GID: '1836433874',
+  REFRESH_SECONDS: 30
+};
+
+const MONITOR_GROUPS = [
+  { key:'g1', name:'Domestik Reguler', colPair:[0,1], color:'#28d9d9' },
+  { key:'g2', name:'Sumatera & Kalimantan', colPair:[3,4], color:'#f5a623' },
+  { key:'g3', name:'Jawa Barat & Kategori Khusus', colPair:[6,7], color:'#3ddc84' },
+];
+
+const DC_LIST = [
+  "Aceh", "Ambon", "Bali", "Bandung", "Bangka", "Banjarmasin", "Banten", "Bengkulu", "Bogor", "Bukittinggi", "Cirebon",
+  "E-commerce Aceh", "E-commerce Ambon", "E-commerce Bali", "E-commerce Bandung", "E-commerce Bangka", "E-commerce Banjarmasin", "E-commerce Bengkulu",
+  "E-commerce Fatmawati", "E-commerce Jambi", "E-commerce Jayapura", "E-commerce Jember", "E-commerce Kendari", "E-commerce Lampung",
+  "E-commerce Malaysia", "E-commerce Manado", "E-commerce Mataram", "E-commerce Padang", "E-commerce Palangkaraya", "E-commerce Palu",
+  "E-commerce Pekanbaru", "E-commerce Pontianak", "E-commerce Pulo Asem", "E-commerce Purwokerto", "E-commerce Rantauprapat", "E-commerce Samarinda",
+  "E-commerce Semarang", "E-commerce Solo - Yogyakarta", "E-commerce Sukabumi", "E-commerce Tanjung Pinang", "E-commerce Tasikmalaya",
+  "Ecommerce Jakarta 1", "Ecommerce Makassar", "Ecommerce Medan", "Ecommerce Nganjuk", "Ecommerce Palembang", "Ecommerce Pulogadung", "Ecommerce Tegal",
+  "Gudang FTZ (Free Trade Zone)", "HO", "Jambi", "Jember", "Kediri", "Kendari", "Lampung", "Makassar", "Malaysia", "Manado", "Mataram", "Medan",
+  "NDC Jatake 3", "NDC Jatake 6", "Packaging Material", "Palangkaraya", "Palembang", "Palu", "Pekanbaru", "Poli Unggul", "Pontianak", "Purwokerto",
+  "Rantau Prapat", "Raw Material", "Samarinda", "Semarang", "Solo", "Sukabumi", "Surabaya", "Tanjung Pinang", "Tasikmalaya"
+];
+
+let CUSTOM_DC_LIST = [];
+
+const PALLET_TYPES = [
+  { name: "Pallet Plastik Hitam Stampel NDC Jatake", dim: "16 cm",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/c7bd6abc-6428-4835-b463-adb3c69c8a5c.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/cfad450c-015e-42dc-8b5e-2ea048431868.jpg" },
+  { name: "Pallet Plastik Hitam Stampel PTI", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/1bb56a8a-546c-456b-ae9c-7d492478c2db.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/dd341be2-c90e-498e-b216-d08d84c6b595.jpg" },
+  { name: "Pallet Plastik Grey Stampel PGI", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/cb6fdf3b-d411-45e4-abd5-1e8b193cfc6d.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/76efbd8a-3386-4a73-952e-6c65020987b1.jpg" },
+  { name: "Pallet Plastik Biru", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/47a54336-eddf-492d-9ca1-63c2a71dd11c.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/d82738f9-1e1f-4c7a-b0c4-290a278e2a17.jpg" },
+  { name: "Pallet Kayu Biru PTI", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/379f27dd-1305-4eec-83e3-a2d6962554bb.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/e2f6abf6-5724-4e33-b379-d2f1bb0573a3.jpg" },
+  { name: "Pallet Kayu Biru JPS", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/3e4822ef-8a4c-41aa-a661-3db5a8ff4ab8.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/d72b18aa-2767-4b4b-a5d0-eee7a86ae3c2.jpg" },
+  { name: "Pallet Plastik Hitam One Way", dim: "12 cm",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/b93c276d-5ec3-45fc-8483-196add9d5110.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/cc5efbaa-305c-46c7-9ceb-3fa73ee43e6d.jpg" },
+  { name: "Pallet Tulisan SKL", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/0424f097-58b2-43be-8808-31c007592b7d.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/3c10ece3-c59d-40f3-b58a-9dd78f59df75.png" },
+  { name: "Pallet Lain-lain", dim: "-",
+    photo: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/9bc7ac8d-0f6d-4c58-91c4-f0f4a4afd449.jpg",
+    icon: "https://i.supaimg.com/2c2fe634-0778-4567-93bf-17d826ecd3d2/193250e9-ad96-4bf3-a081-07cdb425942e.jpg" }
+];
+
+let STORE = {};
+let nextId = 1;
+let isSaving = false;
+let state = { dc: null, pallet: null };
+let currentPage = 'home';
+let monitorInitialized = false;
+
+let dcCounters = {};
+
+let session = { 
+  loggedIn: false, 
+  email: null, 
+  username: null, 
+  assignedDC: null 
+};
+let pendingDC = null;
+
+function cleanStr(s){
+  return String(s||'').replace(/[\u200B-\u200D\uFEFF]/g, '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function cleanDCName(dcName){
+  if(!dcName) return '';
+  const cleaned = cleanStr(dcName);
+  const found = DC_LIST.concat(CUSTOM_DC_LIST).find(d => cleanStr(d) === cleaned);
+  return found ? found : String(dcName).trim();
+}
+
+function cleanPalletName(palletName){
+  if(!palletName) return 'Pallet Lain-lain';
+  let str = cleanStr(palletName);
+  str = str.replace(/plasik/g, 'plastik');
+  
+  const matched = PALLET_TYPES.find(p => {
+    let pNameClean = cleanStr(p.name);
+    return pNameClean === str || pNameClean.replace(/plastik/g, 'plasik') === str;
+  });
+
+  return matched ? matched.name : String(palletName).trim();
+}
+
+function keyOf(dc, pallet){ 
+  return cleanStr(cleanDCName(dc)) + "||" + cleanStr(cleanPalletName(pallet)); 
+}
+
+function fmtTime(d){
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) + ' ' +
+         d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtTglFromRaw(raw){
+  if(!raw) return '';
+  if(typeof raw === 'string' && /^\d{2}\s[A-Za-z]{3}\s\d{4}$/.test(raw)) return raw;
+  const d = new Date(raw);
+  if(isNaN(d.getTime())) return String(raw);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function allDC(){ 
+  const set = new Set([...DC_LIST, ...CUSTOM_DC_LIST]);
+  return Array.from(set).sort((a,b) => a.localeCompare(b, 'id-ID', { sensitivity: 'base' }));
+}
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById('clockTime').textContent = now.toLocaleTimeString('id-ID');
+  document.getElementById('clockDate').textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+tickClock(); setInterval(tickClock, 1000);
+
+function updateSyncBadge(text, colorHex, bgAlpha){
+  const syncBadge = document.getElementById('syncBadge');
+  if(!syncBadge) return;
+  syncBadge.textContent = text;
+  syncBadge.style.color = colorHex;
+  syncBadge.style.background = bgAlpha;
+}
+
+function renderHeaderSession(){
+  const container = document.getElementById('sessionHeaderContainer');
+  if(!container) return;
+  if(session.loggedIn){
+    container.innerHTML = `<div class="session-pill-header">👤 Operator: <strong>${escapeHtml(session.username)}</strong> (${escapeHtml(session.assignedDC || 'Seluruh DC')}) <button onclick="logoutSession()">[Keluar]</button></div>`;
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+const HAS_BACKEND = !!(CONFIG.APPS_SCRIPT_URL && CONFIG.APPS_SCRIPT_URL.startsWith('http'));
+
+function goPage(page){
+  currentPage = page;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.page === page));
+  document.getElementById('app').style.display = page === 'home' ? '' : 'none';
+  document.getElementById('monitorApp').style.display = page === 'monitor' ? '' : 'none';
+  document.getElementById('rekapApp').style.display = page === 'rekap' ? '' : 'none';
+  renderCrumbs();
+  
+  if(page === 'home'){
+    render();
+  }
+  if(page === 'monitor' && !monitorInitialized){
+    monitorInitialized = true;
+    fetchMonitorData();
+    startMonitorCountdown();
+  }
+  if(page === 'rekap'){
+    renderRekapTable();
+  }
+}
+
+function renderCrumbs(){
+  const c = document.getElementById('crumbs');
+  if(currentPage !== 'home' || !state.dc){ c.innerHTML = ''; return; }
+  let html = `<span class="seg" onclick="goHome()">🏠 Daftar DC</span>`;
+  html += `<span class="sep">›</span><span class="seg ${state.pallet?'':'active'}" onclick="goDC('${escapeHtml(state.dc)}')">${escapeHtml(state.dc)}</span>`;
+  if(state.pallet){
+    html += `<span class="sep">›</span><span class="seg active">${escapeHtml(state.pallet)}</span>`;
+  }
+  c.innerHTML = html;
+}
+
+function goHome(){ state.dc=null; state.pallet=null; render(); }
+
+function goDC(dc){
+  if(!session.loggedIn){
+    pendingDC = dc;
+    openLoginModal();
+    return;
+  }
+  
+  if(session.assignedDC && cleanStr(session.assignedDC) !== cleanStr(dc)){
+    alert(`⛔ AKSES DITOLAK!\n\nAkun Anda (${session.username}) HANYA diizinkan mengelola DC: "${session.assignedDC}".`);
+    return;
+  }
+
+  state.dc = dc; 
+  state.pallet = null; 
+  render();
+}
+
+function goPallet(name){ state.pallet = name; render(); }
+
+function showCoolSuccessToast(title, message) {
+  const oldToast = document.getElementById('coolToastOverlay');
+  if (oldToast) oldToast.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'toast-success-overlay';
+  overlay.id = 'coolToastOverlay';
+  overlay.innerHTML = `
+    <div class="toast-success-box">
+      <div class="toast-icon-wrap">✨</div>
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(message)}</p>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeCoolSuccessToast()">
+        Siap, Lanjutkan! 🚀
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+
+  setTimeout(() => {
+    closeCoolSuccessToast();
+  }, 3500);
+}
+
+function closeCoolSuccessToast() {
+  const overlay = document.getElementById('coolToastOverlay');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.2s ease';
+    setTimeout(() => overlay.remove(), 200);
+  }
+}
+
+function openLoginModal(){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'loginOverlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+      <h3>🔒 Login Logistik</h3>
+      <div class="sub">Masuk dengan akun terdaftar</div>
+      <div class="modal-error" id="loginErrorBox"></div>
+      <div class="field">
+        <label>Email / Username</label>
+        <input type="email" id="loginEmail" placeholder="nama@paracorpgroup.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeLoginModal()">Batal</button>
+        <button class="btn btn-primary" id="btnLoginSubmit" onclick="submitLogin()">Masuk</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(()=>{ const e=document.getElementById('loginEmail'); if(e) e.focus(); }, 50);
+}
+
+function closeLoginModal(){
+  const overlay = document.getElementById('loginOverlay');
+  if(overlay) overlay.remove();
+  pendingDC = null;
+}
+
+function showLoginError(msg){
+  const box = document.getElementById('loginErrorBox');
+  if(!box) return;
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+async function submitLogin(){
+  const emailInput = document.getElementById('loginEmail');
+  const passInput = document.getElementById('loginPassword');
+  const email = emailInput ? emailInput.value.trim() : '';
+  const password = passInput ? passInput.value : '';
+
+  if(!email || !password){ showLoginError('Email dan password wajib diisi.'); return; }
+
+  const btn = document.getElementById('btnLoginSubmit');
+  btn.disabled = true; 
+  btn.innerHTML = `<div class="spinner spinner-light"></div> Memeriksa hak akses...`;
+
+  if(!HAS_BACKEND){
+    setTimeout(() => {
+      session = { loggedIn:true, email, username: email.split('@')[0], assignedDC: pendingDC };
+      closeLoginModal();
+      renderHeaderSession();
+      if(pendingDC){ goDC(pendingDC); } else { render(); }
+    }, 600);
+    return;
+  }
+
+  try{
+    const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'login', email, password })
+    });
+    const result = await res.json();
+    if(result.status === 'success'){
+      session = { 
+        loggedIn: true, 
+        email, 
+        username: result.username || email,
+        assignedDC: result.assignedDC || null 
+      };
+      closeLoginModal();
+      renderHeaderSession();
+      
+      if(session.assignedDC){
+        goDC(session.assignedDC);
+      } else if(pendingDC){
+        goDC(pendingDC);
+      } else {
+        render();
+      }
+    } else {
+      showLoginError(result.message || 'Email atau password salah.');
+      btn.disabled = false; 
+      btn.innerHTML = 'Masuk';
+    }
+  }catch(err){
+    showLoginError('Tidak dapat menyambung ke server.');
+    btn.disabled = false; 
+    btn.innerHTML = 'Masuk';
+  }
+}
+
+function logoutSession(){
+  const oldModal = document.getElementById('logoutModalOverlay');
+  if(oldModal) oldModal.remove();
+
+  let totalEntries = 0;
+  let totalPalletCount = 0;
+  const targetDC = session.assignedDC;
+
+  allDC().forEach(dc => {
+    if(!targetDC || cleanStr(dc) === cleanStr(targetDC)){
+      PALLET_TYPES.forEach(p => {
+        const arr = STORE[keyOf(dc, p.name)] || [];
+        totalEntries += arr.length;
+        totalPalletCount += arr.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+      });
+    }
+  });
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'logoutModalOverlay';
+  overlay.innerHTML = `
+    <div class="modal-box" style="max-width:440px; text-align:center;">
+      <div style="font-size:42px; margin-bottom:6px;">🙌</div>
+      <h3 style="font-size:20px; color:var(--text); margin-bottom:4px;">Terima Kasih, ${escapeHtml(session.username || 'Operator')}!</h3>
+      <p style="font-size:13.5px; color:var(--muted); margin:0 0 16px; line-height:1.4;">
+        Terima kasih atas dedikasi dan kerja keras Anda dalam pencatatan inventaris pallet hari ini.
+      </p>
+
+      <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px; text-align:left; margin-bottom:20px;">
+        <div style="font-size:11px; font-family:var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; font-weight:700;">
+          📊 Ringkasan Hasil SO (${escapeHtml(targetDC || 'Seluruh DC')})
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--mono); padding:4px 0; border-bottom:1px dashed var(--border);">
+          <span>Total Input (Entri SO):</span>
+          <strong style="color:var(--text);">${totalEntries} Data</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:14px; font-family:var(--mono); padding-top:6px; font-weight:800; color:var(--teal);">
+          <span>Total Fisik Pallet:</span>
+          <span>${totalPalletCount.toLocaleString('id-ID')} Pcs</span>
+        </div>
+      </div>
+
+      <p style="font-size:12.5px; color:var(--muted); margin-bottom:18px;">
+        Apakah Anda yakin ingin mengakhiri sesi dan keluar dari sistem?
+      </p>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeLogoutModal()">Batal</button>
+        <button class="btn btn-danger" onclick="confirmLogout()">Ya, Keluar Akun</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeLogoutModal(){
+  const overlay = document.getElementById('logoutModalOverlay');
+  if(overlay) overlay.remove();
+}
+
+function confirmLogout(){
+  closeLogoutModal();
+  session = { loggedIn:false, email:null, username:null, assignedDC:null };
+  renderHeaderSession();
+  goHome();
+}
+
+function viewDCList(){
+  const list = allDC();
+  return `
+    <div class="search-box">
+      <input type="text" id="dcSearch" placeholder="Cari DC / Gudang..." oninput="filterDC(this.value)">
+    </div>
+    <div class="section-title">Pilih DC / Gudang (${list.length})</div>
+    <div class="grid" id="dcGrid">
+      ${list.map((dc,i)=>{
+        const totalEntries = countEntriesForDC(dc);
+        const isAllowed = !session.loggedIn || !session.assignedDC || cleanStr(session.assignedDC) === cleanStr(dc);
+        const isCustom = CUSTOM_DC_LIST.some(c => cleanStr(c) === cleanStr(dc));
+
+        if(!isAllowed) return '';
+
+        return `<div class="card ${isCustom?'custom-dc':''}" data-name="${escapeHtml(cleanStr(dc))}" onclick="goDC('${escapeHtml(dc)}')">
+          <div class="idx">${isCustom ? 'CUSTOM' : 'DC-' + String(i+1).padStart(2,'0')}</div>
+          <div class="name">${escapeHtml(dc)}</div>
+          <div class="badge-container">${totalEntries>0?`<div class="badge">${totalEntries} SO</div>`:'<div class="badge empty">Belum SO</div>'}</div>
+          ${isCustom ? `<button class="custom-del-btn" title="Hapus DC Custom" onclick="event.stopPropagation(); deleteCustomDC('${escapeHtml(dc)}')">✕ Hapus</button>` : ''}
+        </div>`;
+      }).join('')}
+      <div class="card custom-card-add" onclick="openAddCustomDCPrompt()">
+        <span class="add-icon">➕</span>
+        <span>Tambah DC Custom</span>
+      </div>
+    </div>
+  `;
+}
+
+function countEntriesForDC(dc){
+  let total = 0;
+  PALLET_TYPES.forEach(p=>{
+    const arr = STORE[keyOf(dc,p.name)];
+    if(arr) total += arr.length;
+  });
+  return total;
+}
+
+function filterDC(q){
+  q = cleanStr(q);
+  document.querySelectorAll('#dcGrid .card').forEach(el=>{
+    if(!el.dataset.name) return;
+    el.style.display = el.dataset.name.includes(q) ? '' : 'none';
+  });
+}
+
+function updateDCBadgesOnly(){
+  const cards = document.querySelectorAll('#dcGrid .card');
+  if(!cards.length) return;
+
+  allDC().forEach(dc => {
+    const cardEl = Array.from(cards).find(c => c.dataset.name === cleanStr(dc));
+    if(cardEl){
+      const badgeContainer = cardEl.querySelector('.badge-container');
+      if(badgeContainer){
+        const totalEntries = countEntriesForDC(dc);
+        badgeContainer.innerHTML = totalEntries > 0 
+          ? `<div class="badge">${totalEntries} SO</div>` 
+          : `<div class="badge empty">Belum SO</div>`;
+      }
+    }
+  });
+}
+
+function openAddCustomDCPrompt(){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'customDCOverlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeCustomDCModal()">✕</button>
+      <h3>➕ Tambah DC Custom</h3>
+      <div class="sub">Masukkan nama DC / Gudang baru yang belum terdaftar</div>
+      <div class="modal-error" id="customDCErrorBox"></div>
+      <div class="field">
+        <label>Nama DC / Gudang Baru</label>
+        <input type="text" id="inpCustomDCName" placeholder="Contoh: DC Bandung 2" autocomplete="off">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeCustomDCModal()">Batal</button>
+        <button class="btn btn-primary" id="btnCustomDCSubmit" onclick="submitCustomDCForm()">Simpan DC</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(()=>{ const e=document.getElementById('inpCustomDCName'); if(e) e.focus(); }, 50);
+}
+
+function closeCustomDCModal(){
+  const overlay = document.getElementById('customDCOverlay');
+  if(overlay) overlay.remove();
+}
+
+function showCustomDCError(msg){
+  const box = document.getElementById('customDCErrorBox');
+  if(!box) return;
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+function submitCustomDCForm(){
+  const inputEl = document.getElementById('inpCustomDCName');
+  if(!inputEl) return;
+  const name = inputEl.value.trim();
+  
+  if(!name){
+    showCustomDCError('Nama DC / Gudang wajib diisi.');
+    return;
+  }
+  
+  if(allDC().some(d => cleanStr(d) === cleanStr(name))){
+    showCustomDCError('Nama DC / Gudang tersebut sudah ada.');
+    return;
+  }
+
+  addCustomDC(name);
+  closeCustomDCModal();
+}
+
+async function addCustomDC(name){
+  CUSTOM_DC_LIST.push(name);
+  render();
+  if(currentPage === 'rekap') renderRekapTable();
+  
+  if(HAS_BACKEND){
+    try{
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({ action:'addDC', name, addedBy: session.username || 'User' })
+      });
+    }catch(err){ console.error('Gagal simpan DC Custom:', err); }
+  }
+}
+
+function deleteCustomDC(name){
+  const oldModal = document.getElementById('deleteDCOverlay');
+  if(oldModal) oldModal.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'deleteDCOverlay';
+  overlay.innerHTML = `
+    <div class="modal-box" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">🗑️</div>
+      <h3 style="color:var(--red);">Hapus DC Custom?</h3>
+      <p style="font-size:13.5px;color:var(--muted);margin:8px 0 20px;line-height:1.4;">
+        Apakah Anda yakin ingin menghapus <strong>"${escapeHtml(name)}"</strong> dari daftar DC?
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeDeleteDCModal()">Batal</button>
+        <button class="btn btn-danger" onclick="confirmDeleteCustomDC('${escapeHtml(name)}')">Ya, Hapus</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeDeleteDCModal(){
+  const overlay = document.getElementById('deleteDCOverlay');
+  if(overlay) overlay.remove();
+}
+
+async function confirmDeleteCustomDC(name){
+  closeDeleteDCModal();
+  CUSTOM_DC_LIST = CUSTOM_DC_LIST.filter(d => cleanStr(d) !== cleanStr(name));
+  render();
+  if(currentPage === 'rekap') renderRekapTable();
+
+  if(HAS_BACKEND){
+    try{
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({ action:'deleteDC', name })
+      });
+    }catch(err){ console.error('Gagal hapus DC Custom:', err); }
+  }
+}
+
+function openQuickInputModal(){
+  const oldModal = document.getElementById('quickInputOverlay');
+  if(oldModal) oldModal.remove();
+
+  if(!dcCounters[state.dc]) dcCounters[state.dc] = {};
+  const currentCounters = dcCounters[state.dc];
+
+  const totalTempSO = Object.values(currentCounters).reduce((a,b)=>a+b, 0);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fullscreen-modal-overlay';
+  overlay.id = 'quickInputOverlay';
+  overlay.innerHTML = `
+    <div class="fullscreen-modal-container">
+      <div class="fullscreen-modal-header">
+        <div>
+          <h3>⚡ Quick Input Hitung SO — ${escapeHtml(state.dc)}</h3>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px;">Format tabel cepat ringkas (bebas scroll)</div>
+        </div>
+        <button class="modal-close" style="position:static;" onclick="closeQuickInputModal()">✕</button>
+      </div>
+      
+      <div class="fullscreen-modal-body">
+        <table class="quick-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;">JENIS PALLET</th>
+              <th style="text-align:center;width:60px;">TOTAL</th>
+              <th style="text-align:center;width:120px;">HITUNG SO (- / +)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${PALLET_TYPES.map(p => {
+              const count = currentCounters[p.name] || 0;
+              return `
+                <tr>
+                  <td><strong style="font-size:13.5px;color:var(--text);">${escapeHtml(p.name)}</strong></td>
+                  <td style="text-align:center;font-family:var(--mono);font-weight:700;color:var(--teal);font-size:15px;" id="qtot-${cleanStr(p.name)}">
+                    ${count}
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="quick-counter-btn-group">
+                      <button class="quick-btn" onclick="changeCounterQuick('${escapeHtml(p.name)}', -1)">-</button>
+                      <button class="quick-btn" onclick="changeCounterQuick('${escapeHtml(p.name)}', 1)">+</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="fullscreen-modal-footer">
+        <div style="font-weight:800;font-size:15px;color:var(--teal);" id="quickModalGrandTotal">
+          TOTAL PALLET BARU: ${totalTempSO} Pcs
+        </div>
+        <div>
+          <button class="btn btn-primary" style="padding:10px 24px;font-size:14px;" onclick="closeQuickInputModal()">
+            Selesai / Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeQuickInputModal(){
+  const overlay = document.getElementById('quickInputOverlay');
+  if(overlay) overlay.remove();
+  render();
+}
+
+function changeCounterQuick(palletName, delta){
+  changeCounter(palletName, delta);
+  updateQuickModalUI();
+}
+
+function updateQuickModalUI(){
+  const currentCounters = dcCounters[state.dc] || {};
+  PALLET_TYPES.forEach(p => {
+    const el = document.getElementById(`qtot-${cleanStr(p.name)}`);
+    if(el) el.textContent = currentCounters[p.name] || 0;
+  });
+  const totalTempSO = Object.values(currentCounters).reduce((a,b)=>a+b, 0);
+  const totalEl = document.getElementById('quickModalGrandTotal');
+  if(totalEl) totalEl.textContent = `TOTAL PALLET BARU: ${totalTempSO} Pcs`;
+}
+
+function viewPalletList(){
+  if(!dcCounters[state.dc]){
+    dcCounters[state.dc] = {};
+  }
+  const currentCounters = dcCounters[state.dc];
+
+  let activePalletSummary = [];
+  let totalTempSO = 0;
+
+  PALLET_TYPES.forEach(p => {
+    const count = currentCounters[p.name] || 0;
+    if(count > 0){
+      activePalletSummary.push({ name: p.name, count: count });
+      totalTempSO += count;
+    }
+  });
+
+  return `
+    <button class="back-btn" onclick="goHome()">← Kembali ke Daftar DC</button>
+
+    <div class="quick-menu-banner" onclick="openQuickInputModal()">
+      <div>
+        <div class="quick-menu-title">⚡ Buka Mode Quick Input SO (Layar Penuh)</div>
+        <div class="quick-menu-sub">Input cepat seluruh jenis pallet dalam 1 tabel tanpa perlu scroll</div>
+      </div>
+      <div class="quick-menu-badge">
+        ${totalTempSO > 0 ? `${totalTempSO} Pallet Baru` : 'Mulai Input'} ➔
+      </div>
+    </div>
+
+    <div class="section-title">Atau Pilih Kartu Pallet untuk Detail Gambar &amp; Hitung Manual</div>
+
+    <div class="grid">
+      ${PALLET_TYPES.map((p,i)=>{
+        const arr = STORE[keyOf(state.dc,p.name)] || [];
+        const count = currentCounters[p.name] || 0;
+        return `<div class="card pallet">
+          <div class="card-top-bar">
+            <div class="idx">0${i+1}</div>
+            ${arr.length>0?`<div class="badge">${arr.length} SO</div>`:'<div class="badge empty">Belum SO</div>'}
+          </div>
+          <div class="thumb" onclick="goPallet('${escapeHtml(p.name)}')">
+            ${p.photo ? `<img src="${escapeHtml(p.photo)}" alt="${escapeHtml(p.name)}" loading="lazy">` : `<span class="fallback-icon">📦</span>`}
+          </div>
+          <div class="name" onclick="goPallet('${escapeHtml(p.name)}')">${escapeHtml(p.name)}</div>
+          <div class="dim">Ukuran: ${escapeHtml(p.dim)}</div>
+          
+          <div class="card-counter">
+            <button class="counter-btn" onclick="changeCounter('${escapeHtml(p.name)}', -1)">-</button>
+            <span class="counter-val" id="cnt-${i}">${count}</span>
+            <button class="counter-btn" onclick="changeCounter('${escapeHtml(p.name)}', 1)">+</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${totalTempSO > 0 ? `
+      <div class="summary-box">
+        <strong style="font-size:15px;color:var(--teal)">📋 Rincian Hitungan SO Pallet (Belum Disimpan):</strong>
+        <ul class="summary-list">
+          ${activePalletSummary.map(item => `
+            <li>
+              <span>• ${escapeHtml(item.name)}</span>
+              <strong>${item.count} Pcs</strong>
+            </li>
+          `).join('')}
+        </ul>
+        <div class="summary-total">
+          <span>TOTAL PALLET BARU:</span>
+          <span>${totalTempSO} Pcs</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;padding:12px;" onclick="submitBatchPalletSO()" ${isSaving?'disabled':''}>
+          ${isSaving ? '<div class="spinner"></div> Menyimpan Data ke Spreadsheet...' : '💾 Simpan Seluruh Data Hitungan ke Spreadsheet'}
+        </button>
+      </div>
+    ` : ''}
+  `;
+}
+
+function setCounterValue(palletName, val){
+  if(!dcCounters[state.dc]) dcCounters[state.dc] = {};
+  const num = parseInt(val, 10);
+  dcCounters[state.dc][palletName] = isNaN(num) || num < 0 ? 0 : num;
+  render();
+}
+
+function changeCounter(palletName, delta){
+  if(!dcCounters[state.dc]) dcCounters[state.dc] = {};
+  if(!dcCounters[state.dc][palletName]) dcCounters[state.dc][palletName] = 0;
+  
+  dcCounters[state.dc][palletName] += delta;
+  if(dcCounters[state.dc][palletName] < 0) dcCounters[state.dc][palletName] = 0;
+  
+  render();
+}
+
+async function submitBatchPalletSO(){
+  const currentCounters = dcCounters[state.dc] || {};
+  const totalQty = Object.values(currentCounters).reduce((a,b)=>a+b, 0);
+
+  if(totalQty <= 0){
+    alert('Hitungan SO Pallet masih 0.');
+    return;
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const tglFmt = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  
+  isSaving = true;
+  render();
+
+  for(const pName of Object.keys(currentCounters)){
+    const qty = currentCounters[pName];
+    if(qty > 0){
+      const uid = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+      const k = keyOf(state.dc, pName);
+      if(!STORE[k]) STORE[k] = [];
+      
+      STORE[k].push({
+        id: 'e' + (nextId++),
+        uid: uid,
+        tgl: tglFmt,
+        pic: session.username || 'Operator',
+        qty: qty,
+        ts: Date.now()
+      });
+
+      if(HAS_BACKEND){
+        try{
+          await fetch(CONFIG.APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'add',
+              uid: uid,
+              tanggal: todayStr,
+              pic: session.username || 'Operator',
+              dc: state.dc,
+              palletType: pName,
+              qty: qty
+            })
+          });
+        }catch(e){
+          console.error('Error sync:', e);
+        }
+      }
+    }
+  }
+
+  showCoolSuccessToast(
+    'Sinkronisasi Berhasil!',
+    `Seluruh data hitungan SO Pallet (${totalQty} Pallet) untuk ${state.dc} berhasil tersimpan ke Spreadsheet secara realtime.`
+  );
+
+  dcCounters[state.dc] = {};
+  isSaving = false;
+  render();
+}
+
+function viewInputForm(){
+  const k = keyOf(state.dc, state.pallet);
+  const entries = (STORE[k]||[]).slice().reverse();
+  const totalQty = (STORE[k]||[]).reduce((s,e)=>s+e.qty,0);
+  const palletInfo = PALLET_TYPES.find(p => p.name === state.pallet) || {};
+
+  return `
+    <button class="back-btn" onclick="goDC('${escapeHtml(state.dc)}')">← Kembali ke Hitungan Pallet</button>
+
+    <div class="pallet-photo">
+      <div class="frame">${palletInfo.photo ? `<img src="${escapeHtml(palletInfo.photo)}" alt="${escapeHtml(state.pallet)}">` : `<span class="fallback-icon">📦</span>`}</div>
+      <div class="cap">📷 Keterangan: <strong>${escapeHtml(state.pallet)}</strong></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="v" style="color:var(--green)">${(STORE[k]||[]).length}</div><div class="l">Total Entri SO</div></div>
+      <div class="stat"><div class="v">${totalQty}</div><div class="l">Total Qty Pallet</div></div>
+      <div class="stat"><div class="v">${escapeHtml(state.dc)}</div><div class="l">DC</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="icon">${palletInfo.icon ? `<img src="${escapeHtml(palletInfo.icon)}" alt="${escapeHtml(state.pallet)}">` : '📦'}</div>
+        <div>
+          <div class="t1">Input Manual</div>
+          <div class="t2">${escapeHtml(state.pallet)}</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Tanggal SO</label>
+          <input type="date" id="inpTgl">
+        </div>
+        <div class="field">
+          <label>Nama PIC SO</label>
+          <input type="text" id="inpPIC" placeholder="Nama PIC..." value="${escapeHtml(session.username||'')}">
+        </div>
+        <div class="field">
+          <label>Jumlah Pallet</label>
+          <input type="number" id="inpQty" placeholder="0" min="1">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btnSimpan" onclick="submitEntry()" ${isSaving?'disabled':''}>
+        ${isSaving ? '<div class="spinner"></div> Menyimpan...' : '+ Simpan Data'}
+      </button>
+    </div>
+
+    <div class="section-title">Riwayat Input (${entries.length})</div>
+    <div class="panel" style="padding:0;overflow-x:auto;">
+      ${entries.length === 0 ? `
+        <div class="empty-state" style="padding:20px;text-align:center;color:var(--muted);">Belum ada data SO untuk pallet ini.</div>
+      ` : `
+        <table>
+          <thead>
+            <tr>
+              <th>Tgl SO</th>
+              <th>PIC SO</th>
+              <th>Qty</th>
+              <th>Waktu Input</th>
+              <th style="text-align:right;padding-right:16px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${entries.map(e=>`
+              <tr>
+                <td class="time-cell">${e.tgl ? escapeHtml(e.tgl) : '—'}</td>
+                <td>${e.pic ? escapeHtml(e.pic) : '—'}</td>
+                <td class="qty-cell">${e.qty} Pallet</td>
+                <td class="time-cell">${fmtTime(new Date(e.ts))}</td>
+                <td style="text-align:right;padding-right:16px;">
+                  <button class="del-btn" onclick="openDeleteSOModal('${e.id}')">
+                    <span>🗑️</span> Hapus
+                  </button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `}
+    </div>
+  `;
+}
+
+async function submitEntry(){
+  const tgl = document.getElementById('inpTgl').value;
+  const pic = document.getElementById('inpPIC').value.trim();
+  const qty = parseInt(document.getElementById('inpQty').value, 10);
+
+  if(!tgl){ alert('Tanggal SO wajib diisi.'); return; }
+  if(!pic){ alert('Nama PIC SO wajib diisi.'); return; }
+  if(!qty || qty <= 0){ alert('Jumlah pallet wajib diisi.'); return; }
+
+  const tglFmt = new Date(tgl+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  const uid = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+
+  const k = keyOf(state.dc, state.pallet);
+  if(!STORE[k]) STORE[k] = [];
+  STORE[k].push({ id: 'e'+(nextId++), uid, tgl: tglFmt, pic, qty, ts: Date.now() });
+
+  isSaving = true;
+  render();
+
+  if(HAS_BACKEND){
+    try{
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'add', uid, tanggal: tgl, pic, dc: state.dc, palletType: state.pallet, qty })
+      });
+    }catch(err){ console.error(err); }
+  }
+
+  isSaving = false;
+  render();
+}
+
+function openDeleteSOModal(id){
+  const k = keyOf(state.dc, state.pallet);
+  if(!STORE[k]) return;
+  const entry = STORE[k].find(e => e.id === id);
+  if(!entry) return;
+
+  const oldModal = document.getElementById('deleteSOOverlay');
+  if(oldModal) oldModal.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'deleteSOOverlay';
+  overlay.innerHTML = `
+    <div class="modal-box" style="text-align:center;">
+      <div style="font-size:38px;margin-bottom:6px;">⚠️</div>
+      <h3 style="color:var(--red);margin-bottom:6px;">Konfirmasi Hapus Data SO</h3>
+      <p style="font-size:13.5px;color:var(--muted);margin:0 0 16px;line-height:1.4;">
+        Anda akan menghapus entri SO berikut secara permanen dari Spreadsheet:
+      </p>
+      
+      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:left;font-family:var(--mono);font-size:12.5px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="color:var(--muted);">TANGGAL:</span>
+          <strong>${escapeHtml(entry.tgl || '—')}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="color:var(--muted);">PIC:</span>
+          <strong>${escapeHtml(entry.pic || '—')}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--muted);">JUMLAH:</span>
+          <strong style="color:var(--red);">${entry.qty} Pallet</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeDeleteSOModal()">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelSO" onclick="confirmDeleteSO('${id}')">Ya, Hapus Data</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeDeleteSOModal(){
+  const overlay = document.getElementById('deleteSOOverlay');
+  if(overlay) overlay.remove();
+}
+
+async function confirmDeleteSO(id){
+  const k = keyOf(state.dc, state.pallet);
+  if(!STORE[k]) return;
+
+  const entry = STORE[k].find(e => e.id === id);
+  if(!entry) return;
+
+  const btn = document.getElementById('btnConfirmDelSO');
+  if(btn){
+    btn.disabled = true;
+    btn.innerHTML = `<div class="spinner spinner-light"></div> Menghapus...`;
+  }
+
+  if(entry.uid && HAS_BACKEND){
+    try{
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'delete', uid: entry.uid })
+      });
+    }catch(err){ console.error(err); }
+  }
+
+  STORE[k] = STORE[k].filter(e => e.id !== id);
+  closeDeleteSOModal();
+  render();
+}
+
+function toggleRekapTVMode() {
+  const container = document.getElementById('rekapTableContainer');
+  const btn = document.getElementById('btnRekapTV');
+  if (!container) return;
+  
+  const isTV = container.classList.toggle('tv-fullscreen');
+  
+  if (isTV) {
+    if (btn) btn.innerHTML = '🗗 Kecilkan Layar';
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    }
+  } else {
+    if (btn) btn.innerHTML = '⛶ Perbesar Layar Penuh';
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  const container = document.getElementById('rekapTableContainer');
+  const btn = document.getElementById('btnRekapTV');
+  if (!document.fullscreenElement) {
+    if (container && container.classList.contains('tv-fullscreen')) {
+      container.classList.remove('tv-fullscreen');
+    }
+    if (btn) btn.innerHTML = '⛶ Perbesar Layar Penuh';
+  }
+});
+
+function renderRekapTable() {
+  const searchInput = document.getElementById('rekapSearch');
+  const query = searchInput ? cleanStr(searchInput.value) : '';
+
+  let listDC = allDC();
+
+  if (query) {
+    listDC = listDC.filter(dc => cleanStr(dc).includes(query));
+  }
+
+  const palletTotals = PALLET_TYPES.map(() => 0);
+  let grandTotal = 0;
+  let activeDCCount = 0;
+
+  const rowsHtml = listDC.map((dc, i) => {
+    let dcRowTotal = 0;
+    const isUserDC = session.assignedDC && cleanStr(session.assignedDC) === cleanStr(dc);
+
+    const palletCols = PALLET_TYPES.map((p, idx) => {
+      const arr = STORE[keyOf(dc, p.name)] || [];
+      const qty = arr.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+      dcRowTotal += qty;
+      palletTotals[idx] += qty;
+      
+      const cellClass = qty > 0 ? 'qty-has' : 'qty-zero';
+      const cellText = qty > 0 ? qty.toLocaleString('id-ID') : '-';
+
+      return `<td class="${cellClass}">${cellText}</td>`;
+    }).join('');
+
+    grandTotal += dcRowTotal;
+    if (dcRowTotal > 0) activeDCCount++;
+
+    return `
+      <tr class="${isUserDC ? 'highlight-user-dc' : ''}">
+        <td style="color:#000000; font-weight:bold;">${i + 1}</td>
+        <td class="dc-cell">${escapeHtml(dc)} ${isUserDC ? '⭐' : ''}</td>
+        ${palletCols}
+        <td class="total-cell">${dcRowTotal > 0 ? dcRowTotal.toLocaleString('id-ID') : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const statsEl = document.getElementById('rekapStatsContainer');
+  if (statsEl) {
+    statsEl.innerHTML = `
+      <div class="stats">
+        <div class="stat"><div class="v">${listDC.length}</div><div class="l">Total DC Ditampilkan</div></div>
+        <div class="stat"><div class="v" style="color:var(--green);">${activeDCCount}</div><div class="l">DC Memiliki SO (Hijau)</div></div>
+        <div class="stat"><div class="v" style="color:var(--red);">${listDC.length - activeDCCount}</div><div class="l">DC Belum SO (Merah)</div></div>
+        <div class="stat"><div class="v" style="color:var(--yolk-deep);">${grandTotal.toLocaleString('id-ID')}</div><div class="l">Total Pallet Keseluruhan</div></div>
+      </div>
+    `;
+  }
+
+  const tableContainer = document.getElementById('rekapTableContainer');
+  if (!tableContainer) return;
+
+  if (listDC.length === 0) {
+    tableContainer.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);">Tidak ada DC yang cocok dengan pencarian "${escapeHtml(query)}"</div>`;
+    return;
+  }
+
+  tableContainer.innerHTML = `
+    <table class="rekap-table">
+      <thead>
+        <tr>
+          <th style="width:30px;">No</th>
+          <th>Nama DC / Gudang</th>
+          ${PALLET_TYPES.map(p => `<th title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</th>`).join('')}
+          <th style="background:#CDEBFB;color:#0E3A5C;">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="text-align:right;padding-right:10px;font-family:var(--sans);">TOTAL:</td>
+          ${palletTotals.map(tot => `<td>${tot > 0 ? tot.toLocaleString('id-ID') : '-'}</td>`).join('')}
+          <td style="background:var(--teal);color:#ffffff;font-weight:bold;">${grandTotal.toLocaleString('id-ID')}</td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+}
+
+function mapSheetItem(item){
+  return {
+    dc: item.dc || item.DC || item.Gudang || item['Nama DC'] || item['Nama Gudang'] || '',
+    palletType: item.palletType || item.pallet || item.Pallet || item['Jenis Pallet'] || item['Tipe Pallet'] || item.PalletType || '',
+    qty: item.qty || item.Qty || item.QTY || item.Jumlah || item.JUMLAH || 0,
+    tgl: item.tgl || item.tanggal || item.Tanggal || item.TGL || '',
+    pic: item.pic || item.PIC || item.Operator || item.User || '',
+    uid: item.uid || item.UID || item.id || item.ID || '',
+    timestamp: item.timestamp || item.Timestamp || item.Waktu || ''
+  };
+}
+
+async function loadFromSheet(silent){
+  if(!HAS_BACKEND) return;
+
+  try{
+    const res = await fetch(CONFIG.APPS_SCRIPT_URL, { method: 'GET' });
+    const result = await res.json();
+
+    if(result.status === 'success'){
+      const freshStore = {};
+      let maxId = 0;
+
+      const rawList = Array.isArray(result.data) ? result.data : [];
+
+      rawList.forEach(function(rawObj){
+        const item = mapSheetItem(rawObj);
+        
+        const rawDC = String(item.dc).trim();
+        const rawPallet = String(item.palletType).trim();
+        if(!rawDC || !rawPallet) return;
+
+        const targetDC = cleanDCName(rawDC);
+        const targetPallet = cleanPalletName(rawPallet);
+
+        if(!allDC().some(d => cleanStr(d) === cleanStr(targetDC))){
+          CUSTOM_DC_LIST.push(targetDC);
+        }
+
+        const k = keyOf(targetDC, targetPallet);
+        if(!freshStore[k]) freshStore[k] = [];
+
+        let ts = Date.now();
+        if(item.timestamp){
+          const parsed = new Date(item.timestamp);
+          if(!isNaN(parsed.getTime())) ts = parsed.getTime();
+        }
+
+        maxId++;
+        freshStore[k].push({
+          id: 'e' + maxId,
+          uid: item.uid,
+          tgl: fmtTglFromRaw(item.tgl),
+          pic: item.pic,
+          qty: Number(item.qty) || 0,
+          ts: ts
+        });
+      });
+
+      const oldDataStr = JSON.stringify(STORE);
+      const newDataStr = JSON.stringify(freshStore);
+
+      const oldDCStr = JSON.stringify(CUSTOM_DC_LIST);
+      const newDCList = Array.isArray(result.customDC) ? result.customDC.filter(Boolean) : [];
+      CUSTOM_DC_LIST = Array.from(new Set([...CUSTOM_DC_LIST, ...newDCList]));
+      const newDCStr = JSON.stringify(CUSTOM_DC_LIST);
+
+      const dataChanged = (oldDataStr !== newDataStr) || (oldDCStr !== newDCStr);
+
+      STORE = freshStore;
+      nextId = maxId + 1;
+
+      updateSyncBadge('● Tersambung (Live)', '#1D6FB8', 'rgba(29,111,184,0.1)');
+
+      if((dataChanged || !silent) && !isSaving){
+        if(currentPage === 'rekap'){
+          renderRekapTable();
+        } else if(currentPage === 'home'){
+          const dcSearchInput = document.getElementById('dcSearch');
+          if(dcSearchInput && (document.activeElement === dcSearchInput || dcSearchInput.value.trim() !== '')){
+            updateDCBadgesOnly();
+          } else {
+            render();
+          }
+        }
+      }
+    }
+  }catch(err){
+    updateSyncBadge('⚠ Tidak terhubung', '#D25353', 'rgba(226,92,92,0.1)');
+  }
+}
+
+function render(){
+  renderCrumbs();
+  renderHeaderSession();
+  const app = document.getElementById('app');
+  if(!state.dc){
+    app.innerHTML = viewDCList();
+  } else if(!state.pallet){
+    app.innerHTML = viewPalletList();
+  } else {
+    app.innerHTML = viewInputForm();
+  }
+}
+
+let monAllData = [];
+let monRefreshTimer = null;
+let monCountdown = MONITOR_CONFIG.REFRESH_SECONDS;
+
+const monDotEl = document.getElementById('monStatusDot');
+const monStatusTextEl = document.getElementById('monStatusText');
+const monGridEl = document.getElementById('monGrid');
+const monResultCountEl = document.getElementById('monResultCount');
+const monHighlightEl = document.getElementById('monHighlightStrip');
+const monLastUpdateEl = document.getElementById('monLastUpdate');
+const monRefreshFillEl = document.getElementById('monRefreshFill');
+const monRefreshLabelEl = document.getElementById('monRefreshLabel');
+const monSearchEl = document.getElementById('monSearch');
+const monSortModeEl = document.getElementById('monSortMode');
+
+function fmtNum(n){ return n.toLocaleString('id-ID'); }
+
+function renderMonitorHighlights(){
+  const sorted = [...monAllData].sort((a,b)=>b.val-a.val);
+  const top3 = sorted.slice(0,3);
+  monHighlightEl.innerHTML = '';
+  const labels = ['Tertinggi #1','Tertinggi #2','Tertinggi #3'];
+  top3.forEach((item,i)=>{
+    const div = document.createElement('div');
+    div.className = 'hl-card';
+    div.innerHTML = `
+      <div class="lbl"><span>${labels[i]}</span><span>${item.groupName}</span></div>
+      <div class="num">${fmtNum(item.val)}</div>
+      <div class="sub">${item.name}</div>
+    `;
+    monHighlightEl.appendChild(div);
+  });
+}
+
+function renderMonitorGrid(){
+  let list = [...monAllData];
+  const q = monSearchEl.value.trim().toLowerCase();
+  if(q) list = list.filter(d => d.name.toLowerCase().includes(q));
+
+  const mode = monSortModeEl.value;
+  if(mode === 'desc') list.sort((a,b)=>b.val-a.val);
+  else if(mode === 'asc') list.sort((a,b)=>a.val-b.val);
+  else list.sort((a,b)=>a.name.localeCompare(b.name));
+
+  monResultCountEl.innerHTML = `Menampilkan <strong>${list.length}</strong> dari <strong>${monAllData.length}</strong> DC`;
+  monGridEl.innerHTML = '';
+
+  if(list.length === 0){
+    monGridEl.innerHTML = '<div class="empty-msg">Tidak ada DC yang cocok.</div>';
+    return;
+  }
+
+  const maxVal = Math.max(...monAllData.map(d=>d.val), 1);
+
+  list.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'mon-card' + (item.val === 0 ? ' zero' : '');
+    const pct = Math.max(2, Math.round((item.val / maxVal) * 100));
+    card.innerHTML = `
+      <div class="grp-tag" style="background:${item.color}"></div>
+      <div class="name">${item.name}</div>
+      <div class="val">${fmtNum(item.val)}<span>pallet</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${item.val===0?'#1e2b38':undefined}"></div></div>
+    `;
+    monGridEl.appendChild(card);
+  });
+}
+
+function parseMonitorGviz(text){
+  const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+  const data = JSON.parse(jsonStr);
+  const rows = data.table.rows || [];
+  const results = [];
+
+  rows.forEach(row => {
+    if(!row || !row.c) return;
+    MONITOR_GROUPS.forEach(g => {
+      const [nameIdx, valIdx] = g.colPair;
+      const nameCell = row.c[nameIdx];
+      const valCell = row.c[valIdx];
+      const name = nameCell && nameCell.v !== null && nameCell.v !== undefined ? String(nameCell.v).trim() : '';
+      const rawVal = valCell && valCell.v !== null && valCell.v !== undefined ? valCell.v : null;
+      if(!name || name.toUpperCase() === 'DC') return;
+      const val = Number(rawVal);
+      if(isNaN(val)) return;
+      results.push({ name, val, groupKey: g.key, groupName: g.name, color: g.color });
+    });
+  });
+  return results;
+}
+
+async function fetchMonitorData(){
+  monDotEl.className = 'dot loading';
+  monStatusTextEl.textContent = 'Menyinkronkan…';
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${MONITOR_CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&gid=${MONITOR_CONFIG.GID}&t=${Date.now()}`;
+    const res = await fetch(url, { cache:'no-store' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const parsed = parseMonitorGviz(text);
+    if(parsed.length === 0) throw new Error('Data kosong');
+    monAllData = parsed;
+    monDotEl.className = 'dot';
+    monStatusTextEl.textContent = 'Live — tersambung';
+    monLastUpdateEl.textContent = 'Terakhir sinkron: ' + new Date().toLocaleTimeString('id-ID');
+    renderMonitorHighlights();
+    renderMonitorGrid();
+  }catch(err){
+    monDotEl.className = 'dot err';
+    monStatusTextEl.textContent = 'Gagal memuat data';
+  }
+}
+
+function startMonitorCountdown(){
+  clearInterval(monRefreshTimer);
+  monCountdown = MONITOR_CONFIG.REFRESH_SECONDS;
+  monRefreshTimer = setInterval(()=>{
+    monCountdown--;
+    const pct = ((MONITOR_CONFIG.REFRESH_SECONDS - monCountdown) / MONITOR_CONFIG.REFRESH_SECONDS) * 100;
+    monRefreshFillEl.style.width = pct + '%';
+    monRefreshLabelEl.textContent = monCountdown + 's';
+    if(monCountdown <= 0){
+      fetchMonitorData();
+      monCountdown = MONITOR_CONFIG.REFRESH_SECONDS;
+    }
+  }, 1000);
+}
+
+document.getElementById('monRefreshBtn').onclick = () => { fetchMonitorData(); monCountdown = MONITOR_CONFIG.REFRESH_SECONDS; };
+document.getElementById('monFsBtn').onclick = () => {
+  const monEl = document.getElementById('monitorApp');
+  monEl.classList.toggle('tv-mode');
+  if(!document.fullscreenElement){ monEl.requestFullscreen?.().catch(()=>{}); } 
+  else { document.exitFullscreen?.().catch(()=>{}); }
+};
+monSearchEl.addEventListener('input', renderMonitorGrid);
+monSortModeEl.addEventListener('change', renderMonitorGrid);
+
+goPage('home');
+loadFromSheet();
+setInterval(() => loadFromSheet(true), CONFIG.AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
